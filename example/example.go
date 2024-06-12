@@ -17,5 +17,5 @@ func main() {
 		log.Panic(err)
 	}
 
-	fmt.Print("DONE")
+	fmt.Println("DONE")
 }

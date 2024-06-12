@@ -47,6 +47,11 @@ func (c *command) Run(inpath, outdir string) error {
 	return cmd.Run()
 }
 
+// String returns a human-readable description of the command.
+func (c *command) String() string {
+	return exec.Command(c.path, append(c.args, "<inpath>", "<outdir>")...).String()
+}
+
 // ----------------------------------------------------------------------------
 // -- `pdfimages` options
 // ----------------------------------------------------------------------------
