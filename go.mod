@@ -1,3 +1,3 @@
-module github.com/dosadczuk/pdfimages
+module github.com/dosadczuk/go-pdfimages
 
 go 1.22

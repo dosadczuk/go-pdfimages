@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dosadczuk/pdfimages"
+	"github.com/dosadczuk/go-pdfimages"
 )
 
 func main() {
