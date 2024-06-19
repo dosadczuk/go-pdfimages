@@ -1,4 +1,4 @@
-# pdfimages
+# go-pdfimages
 
 Package pdfimages is a wrapper around Xpdf command line tool `pdfimages`.
 
