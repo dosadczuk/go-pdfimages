@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -12,7 +13,7 @@ func main() {
 		pdfimages.WithSaveRaw(),
 	)
 
-	err := cmd.Run("./example.pdf", "./images")
+	err := cmd.Run(context.Background(), "./example.pdf", "./images")
 	if err != nil {
 		log.Panic(err)
 	}
