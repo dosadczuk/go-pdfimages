@@ -18,7 +18,6 @@ package pdfimages
 
 import (
 	"context"
-	"log"
 	"os/exec"
 	"strconv"
 )
@@ -27,14 +26,14 @@ import (
 // -- `pdfimages`
 // ----------------------------------------------------------------------------
 
-type command struct {
+type Command struct {
 	path string
 	args []string
 }
 
 // NewCommand creates new `pdfimages` command.
-func NewCommand(opts ...option) *command {
-	cmd := &command{path: "pdfimages"}
+func NewCommand(opts ...option) (*Command, error) {
+	cmd := &Command{path: "pdfimages"}
 	for _, opt := range opts {
 		opt(cmd)
 	}
@@ -44,21 +43,21 @@ func NewCommand(opts ...option) *command {
 	// assert that executable exists and get absolute path
 	cmd.path, err = exec.LookPath(cmd.path)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return cmd
+	return cmd, nil
 }
 
 // Run executes prepared `pdfimages` command.
-func (c *command) Run(ctx context.Context, inpath, outdir string) error {
+func (c *Command) Run(ctx context.Context, inpath, outdir string) error {
 	cmd := exec.CommandContext(ctx, c.path, append(c.args, inpath, outdir)...)
 
 	return cmd.Run()
 }
 
 // String returns a human-readable description of the command.
-func (c *command) String() string {
+func (c *Command) String() string {
 	return exec.Command(c.path, append(c.args, "<inpath>", "<outdir>")...).String()
 }
 
@@ -66,39 +65,39 @@ func (c *command) String() string {
 // -- `pdfimages` options
 // ----------------------------------------------------------------------------
 
-type option func(*command)
+type option func(*Command)
 
 // Set custom location for `pdfimages` executable.
 func WithCustomPath(path string) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.path = path
 	}
 }
 
 // Read config-file in place of ~/.xpdfrc or the system-wide config file.
 func WithCustomConfig(path string) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-cfg", path)
 	}
 }
 
 // Specifies the first page to scan.
 func WithPageFrom(from uint64) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-f", strconv.FormatUint(from, 10))
 	}
 }
 
 // Specifies the last page to scan.
 func WithPageTo(to uint64) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-l", strconv.FormatUint(to, 10))
 	}
 }
 
 // Specifies the range of pages to convert.
 func WithPageRange(from, to uint64) option {
-	return func(c *command) {
+	return func(c *Command) {
 		WithPageFrom(from)
 		WithPageTo(to)
 	}
@@ -114,7 +113,7 @@ func WithPageRange(from, to uint64) option {
 //
 // Note: inline images are always saved in PBM/PGM/PPM format.
 func WithSaveDctAsJpeg() option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-j")
 	}
 }
@@ -126,7 +125,7 @@ func WithSaveDctAsJpeg() option {
 //
 // Note: inline images are always saved in PBM/PGM/PPM format.
 func WithSaveRaw() option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-raw")
 	}
 }
@@ -135,14 +134,14 @@ func WithSaveRaw() option {
 //
 // Providing this will bypass all security restrictions.
 func WithOwnerPassword(password string) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-opw", password)
 	}
 }
 
 // Specify the user password for the PDF file.
 func WithUserPassword(password string) option {
-	return func(c *command) {
+	return func(c *Command) {
 		c.args = append(c.args, "-upw", password)
 	}
 }
