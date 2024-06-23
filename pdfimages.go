@@ -1,4 +1,4 @@
-// Package pdfimages is a wrapper around Xpdf command line tool `pdfimages`.
+// Package pdfimages is a wrapper for Xpdf command line tool `pdfimages`.
 //
 // What is `pdfimages`?
 //
@@ -18,6 +18,7 @@ package pdfimages
 
 import (
 	"context"
+	"log"
 	"os/exec"
 	"strconv"
 )
@@ -33,9 +34,17 @@ type command struct {
 
 // NewCommand creates new `pdfimages` command.
 func NewCommand(opts ...option) *command {
-	cmd := &command{path: "/usr/bin/pdfimages"}
+	cmd := &command{path: "pdfimages"}
 	for _, opt := range opts {
 		opt(cmd)
+	}
+
+	var err error
+
+	// assert that executable exists and get absolute path
+	cmd.path, err = exec.LookPath(cmd.path)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return cmd
